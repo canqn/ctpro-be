@@ -7,6 +7,8 @@ use App\Models\MachineLicense;
 use App\Models\TaxLicense;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class LicenseManagementController extends Controller
 {
@@ -31,6 +33,17 @@ class LicenseManagementController extends Controller
             'machineLicense' => $machineLicense
         ]);
     }
+
+    // Trang chi tiết license máy
+    public function editMachineLicense($id)
+    {
+        $machineLicense = MachineLicense::with(['user', 'taxLicenses', 'activationLogs'])
+            ->findOrFail($id);
+        return view('admin.licenses.machines.edit', [
+            'machineLicense' => $machineLicense
+        ]);
+    }
+
 
     // Trang thêm mới license máy
     public function createMachineLicense()
@@ -63,6 +76,55 @@ class LicenseManagementController extends Controller
             ->with('success', 'Machine license created successfully');
     }
 
+    public function updateMachineLicense(Request $request, $id)
+    {
+        try {
+            // Validate the request data
+            $validated = $request->validate([
+                'machine_key' => 'required|string|max:255',
+                'machine_name' => 'nullable|string|max:255',
+                'expires_at' => 'nullable|date',
+                'status' => 'required|in:active,suspended,inactive,blocked',
+                'active_taxcode' => 'required|in:active,blocked',
+            ]);
+
+            DB::beginTransaction();
+            //dd($request->all());
+            $machineLicense = MachineLicense::findOrFail($id);
+            // Update the machine license
+            $machineLicense->update([
+                'machine_key' => $validated['machine_key'],
+                'machine_name' => $validated['machine_name'],
+                'expires_at' => $validated['expires_at'] ? Carbon::parse($validated['expires_at']) : null,
+                'status' => $validated['status'],
+                'active_taxcode' => $validated['active_taxcode'],
+            ]);
+
+            // If status is blocked or inactive, we might want to handle related records
+            if (in_array($validated['status'], ['blocked', 'inactive'])) {
+                // Example: Update all related tax licenses to inactive
+                $machineLicense->taxLicenses()->update([
+                    'status' => 'inactive'
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.licenses.machines.show', $machineLicense->id)
+                ->with('success', 'License máy đã được cập nhật thành công.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            return back()
+                ->withErrors($e->errors())
+                ->withInput();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->with('error', 'Có lỗi xảy ra khi cập nhật license máy: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
     // Trang danh sách license thuế
     public function indexTaxLicenses(Request $request)
     {

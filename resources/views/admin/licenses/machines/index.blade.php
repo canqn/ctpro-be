@@ -30,6 +30,7 @@
                     <th scope="col" class="px-6 py-3">Trạng Thái</th>
                     <th scope="col" class="px-6 py-3">Full mst</th>
                     <th scope="col" class="px-6 py-3">Ngày Tạo</th>
+                    <th scope="col" class="px-6 py-3">Ngày hết hạn</th>
                     <th scope="col" class="px-6 py-3">Action</th>
                 </tr>
             </thead>
@@ -55,11 +56,14 @@
                         {{ ucfirst($license->active_taxcode) }}
                     </span>
                 </td>
-                <td class="px-6 py-3">{{ $license->created_at->format('d/m/Y') }}</td>
+                <td class="px-6 py-3">{{ $license->last_activated_at->format('d/m/Y') }}</td>
+                <td class="px-6 py-3">{{ $license->expires_at->format('d/m/Y') }}</td>
                 <td class="w-36 px-6 py-3">
                     <div class="flex gap-2 items-center text-white text-sm">
                         <a href="{{ route('admin.licenses.machines.show', $license->id) }}" class="px-3 py-1 rounded-md bg-blue-500 hover:bg-blue-600"><i class='bx bx-info-circle'></i></a>
-                        <a href="{{ route('admin.licenses.tax.create', $license->id)}}" class="px-3 py-1 rounded-md bg-green-500 hover:bg-green-600"><i class='bx bx-edit'></i></a>
+                        <a href="{{ route('admin.licenses.machines.edit', $license->id) }}" class="px-3 py-1 rounded-md bg-orange-500 hover:bg-orange-600"><i class='bx bxs-edit'></i></a>
+                        <a href="{{ route('admin.licenses.tax.create', $license->id)}}" class="px-3 py-1 rounded-md bg-green-500 hover:bg-green-600"><i class='bx bx-key' ></i></a>
+                        <a href="#" class="px-3 py-1 rounded-md bg-green-500 hover:bg-green-600"><i class='bx bx-key' ></i></a>
                     </div>
                 </td>
             </tr>

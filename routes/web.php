@@ -77,6 +77,8 @@ Route::middleware(['auth', 'user-access:admin'])->group(function () {
             Route::get('/machines/create', 'createMachineLicense')->name('machines.create');
             Route::post('/machines', 'storeMachineLicense')->name('machines.store');
             Route::get('/machines/{id}', 'showMachineLicense')->name('machines.show');
+            Route::get('/machines/{id}/edit', 'editMachineLicense')->name('machines.edit');
+            Route::patch('/machines/{id}', 'updateMachineLicense')->name('machines.update');
         });
 
         //Tax Licenses

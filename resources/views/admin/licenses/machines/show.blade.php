@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Danh sách lượt tải')
+@section('title', 'Danh sách bản quyền máy')
 
 @section('contents')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -78,6 +78,7 @@
                 <p><strong>Người Dùng:</strong> {{ $machineLicense->user->username ?? 'Không xác định' }}</p>
                 <p><strong>Email:</strong> {{ $machineLicense->user->email ?? 'Không xác định' }}</p>
                 <p><strong>SĐT:</strong> {{ $machineLicense->user->phone ?? 'Không xác định' }}</p>
+                <p><strong>Ngày hết hạn:</strong> {{ $machineLicense->expires_at?->format('d/m/Y') ?? 'Không xác định' }}</p>
             </div>
             <div>
                 <h3 class="text-lg font-medium text-gray-800 mb-2">Chi Tiết Máy</h3>
